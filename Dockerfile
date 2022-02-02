@@ -31,9 +31,10 @@ COPY paperclip.jar /opt/minecraft/paperspigot.jar
 
 # Install and run rcon
 RUN apk --no-cache add dpkg && \
-    dpkgArch="$(dpkg --print-architecture)" 
+    dpkgArch="$(dpkg --print-architecture)"
+ARG ARCH=${dpkgArch}
 ARG RCON_CLI_VER=1.4.8
-ADD https://github.com/itzg/rcon-cli/releases/download/${RCON_CLI_VER}/rcon-cli_${RCON_CLI_VER}_linux_${dpkgArch}.tar.gz /tmp/rcon-cli.tgz
+ADD https://github.com/itzg/rcon-cli/releases/download/${RCON_CLI_VER}/rcon-cli_${RCON_CLI_VER}_linux_${ARCH}.tar.gz /tmp/rcon-cli.tgz
 RUN tar -x -C /usr/local/bin -f /tmp/rcon-cli.tgz rcon-cli && \
   rm /tmp/rcon-cli.tgz
 
