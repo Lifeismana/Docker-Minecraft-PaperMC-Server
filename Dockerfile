@@ -6,24 +6,12 @@ RUN apk add curl jq
 
 LABEL Marc Tönsing <marc@marc.tv>
 
-ARG version=1.18.1
-
-
-########################################################
-############## Download Paper with API #################
-########################################################
-WORKDIR /opt/minecraft
-COPY ./getpaperserver.sh /
-RUN chmod +x /getpaperserver.sh
-RUN /getpaperserver.sh ${version}
-
-# Run paperclip and obtain patched jar
-RUN java -Dpaperclip.patchonly=true -jar /opt/minecraft/paperclip.jar; exit 0
-
 ########################################################
 ############## Running environment #####################
 ########################################################
 FROM alpine:3.14
+
+LABEL Marc Tönsing <marc@marc.tv>
 
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
@@ -31,7 +19,7 @@ ENV LC_ALL en_US.UTF-8
 
 RUN wget --quiet https://cdn.azul.com/public_keys/alpine-signing@azul.com-5d5dc44c.rsa.pub -P /etc/apk/keys/ && \
     echo "https://repos.azul.com/zulu/alpine" >> /etc/apk/repositories && \
-    apk --no-cache add zulu17-jre
+    apk --no-cache add zulu17-jre     
 
 ENV JAVA_HOME=/usr/lib/jvm/zulu17-ca
 
@@ -42,8 +30,10 @@ WORKDIR /data
 COPY paperclip.jar /opt/minecraft/paperspigot.jar
 
 # Install and run rcon
+RUN apk --no-cache add dpkg && \
+    dpkgArch="$(dpkg --print-architecture)" 
 ARG RCON_CLI_VER=1.4.8
-ADD https://github.com/itzg/rcon-cli/releases/download/${RCON_CLI_VER}/rcon-cli_${RCON_CLI_VER}_linux_amd64.tar.gz /tmp/rcon-cli.tgz
+ADD https://github.com/itzg/rcon-cli/releases/download/${RCON_CLI_VER}/rcon-cli_${RCON_CLI_VER}_linux_${dpkgArch}.tar.gz /tmp/rcon-cli.tgz
 RUN tar -x -C /usr/local/bin -f /tmp/rcon-cli.tgz rcon-cli && \
   rm /tmp/rcon-cli.tgz
 
