@@ -23,38 +23,23 @@ RUN java -Dpaperclip.patchonly=true -jar /opt/minecraft/paperclip.jar; exit 0
 ########################################################
 ############## Running environment #####################
 ########################################################
-FROM ubuntu:focal
+FROM alpine:3.14
 
-ARG ZULU_REPO_VER=1.0.0-3
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
-ENV DEBIAN_FRONTEND=noninteractive\
-    LANG=en_US.UTF-8 \
-    LANGUAGE=en_US:en \
-    LC_ALL=en_US.UTF-8\
-    TZ=Europe/Paris
+RUN wget --quiet https://cdn.azul.com/public_keys/alpine-signing@azul.com-5d5dc44c.rsa.pub -P /etc/apk/keys/ && \
+    echo "https://repos.azul.com/zulu/alpine" >> /etc/apk/repositories && \
+    apk --no-cache add zulu17-jre
 
-RUN apt-get -qq update && \
-    apt-get -qq -y --no-install-recommends install gnupg software-properties-common locales curl && \
-    locale-gen en_US.UTF-8 && \
-    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0x219BD9C9 && \
-    curl -sLO https://cdn.azul.com/zulu/bin/zulu-repo_${ZULU_REPO_VER}_all.deb && dpkg -i zulu-repo_${ZULU_REPO_VER}_all.deb && \
-    apt-get -qq update && \
-    apt-get -qq -y dist-upgrade && \
-    apt-get -qq -y --no-install-recommends install zulu17-jdk && \
-    apt-get -qq -y purge gnupg software-properties-common curl && \
-    apt -y autoremove && \
-    rm -rf /var/lib/apt/lists/* zulu-repo_${ZULU_REPO_VER}_all.deb\
-    dpkgArch="$(dpkg --print-architecture)";
-
-
-ENV JAVA_HOME=/usr/lib/jvm/zulu17-ca-${dpkgArch}
-
+ENV JAVA_HOME=/usr/lib/jvm/zulu17-ca
 
 # Working directory
 WORKDIR /data
 
 # Obtain runable jar from build stage
-COPY --from=build /opt/minecraft/paperclip.jar /opt/minecraft/paperspigot.jar
+COPY paperclip.jar /opt/minecraft/paperspigot.jar
 
 # Install and run rcon
 ARG RCON_CLI_VER=1.4.8
