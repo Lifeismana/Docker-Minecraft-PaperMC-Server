@@ -35,12 +35,12 @@ WORKDIR /data
 COPY paperclip.jar /opt/minecraft/paperspigot.jar
 
 # Install and run rcon
-ARG RCON_CLI_VER=1.4.8
-RUN curl -sLo /tmp/rcon-cli.tgz https://github.com/itzg/rcon-cli/releases/download/${RCON_CLI_VER}/rcon-cli_${RCON_CLI_VER}_linux_${dpkgArch}.tar.gz \
+ARG RCON_CLI_VER=1.5.1
+RUN curl -sLo /tmp/rcon-cli.tgz https://github.com/itzg/rcon-cli/releases/download/${RCON_CLI_VER}/rcon-cli_${RCON_CLI_VER}_linux_${dpkgArch}.tar.gz &&\
   tar -x -C /usr/local/bin -f /tmp/rcon-cli.tgz rcon-cli && \
-  rm /tmp/rcon-cli.tgz
+  rm /tmp/rcon-cli.tgz;
 
-# Uninstall unnedded packages
+# Uninstall unneeded packages
 RUN apt-get -qq -y purge gnupg software-properties-common curl && \
     apt -y autoremove && \
     rm -rf /var/lib/apt/lists/* zulu-repo_${ZULU_REPO_VER}_all.deb;
