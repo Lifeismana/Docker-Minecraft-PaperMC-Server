@@ -24,7 +24,6 @@ RUN set -eux &&\
     apt-get -qq -y --no-install-recommends install zulu17-jdk && \
     dpkgArch="$(dpkg --print-architecture)";
 
-
 ENV JAVA_HOME=/usr/lib/jvm/zulu17-ca-${dpkgArch}
 
 
@@ -34,11 +33,9 @@ WORKDIR /data
 # Obtain runable jar from build stage
 COPY paperclip.jar /opt/minecraft/paperspigot.jar
 
-RUN echo ${dpkgArch} && echo $dpkgArch && echo dpkgArch
-
 # Install and run rcon
 ARG RCON_CLI_VER=1.5.1
-RUN curl -sLo /tmp/rcon-cli.tgz https://github.com/itzg/rcon-cli/releases/download/${RCON_CLI_VER}/rcon-cli_${RCON_CLI_VER}_linux_${dpkgArch}.tar.gz &&\
+RUN curl -sLo /tmp/rcon-cli.tgz https://github.com/itzg/rcon-cli/releases/download/${RCON_CLI_VER}/rcon-cli_${RCON_CLI_VER}_linux_$(dpkg --print-architecture).tar.gz &&\
   tar -x -C /usr/local/bin -f /tmp/rcon-cli.tgz rcon-cli && \
   rm /tmp/rcon-cli.tgz;
 
