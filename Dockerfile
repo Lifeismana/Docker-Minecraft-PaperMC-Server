@@ -34,6 +34,8 @@ WORKDIR /data
 # Obtain runable jar from build stage
 COPY paperclip.jar /opt/minecraft/paperspigot.jar
 
+RUN echo ${dpkgArch} && echo $dpkgArch && echo dpkgArch
+
 # Install and run rcon
 ARG RCON_CLI_VER=1.5.1
 RUN curl -sLo /tmp/rcon-cli.tgz https://github.com/itzg/rcon-cli/releases/download/${RCON_CLI_VER}/rcon-cli_${RCON_CLI_VER}_linux_${dpkgArch}.tar.gz &&\
